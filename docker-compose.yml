@@ -1,0 +1,99 @@
+version: '3.8'
+
+services:
+  #PHP Service
+  ecom:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    image: digitalocean.com/php
+    container_name: ecom
+    restart: unless-stopped
+    tty: true
+    environment:
+      SERVICE_NAME: ecom
+      SERVICE_TAGS: dev
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - ecom-network
+
+  #Nginx Service
+  ecomwebserver:
+    image: nginx:alpine
+    container_name: ecomwebserver
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
+    depends_on:
+      - ecom
+      - ecomdb
+    networks:
+      - ecom-network
+
+  #MySQL Service
+  ecomdb:
+    image: mysql:5.7.22
+    container_name: ecomdb
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - ecomdbdata:/var/lib/mysql
+      - ./docker/mysql/my.cnf:/etc/mysql/my.cnf
+    networks:
+      - ecom-network
+
+  # Redis Cache
+  ecomredis:
+    image: "redis:alpine"
+    container_name: ecomredis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - ecom-network
+
+  # Phpmyadmin
+  ecomphpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: ecomadmin2
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      PMA_HOST: ecomdb
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+    restart: unless-stopped
+    depends_on:
+      - ecomdb
+    ports:
+    - "8080:80"
+    networks:
+      - ecom-network
+    links:
+      - ecomdb
+
+#Docker Networks
+networks:
+  ecom-network:
+    driver: bridge
+    
+#Volumes
+volumes:
+  ecomdbdata:
+    driver: local
