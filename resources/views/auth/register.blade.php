@@ -1,60 +1,141 @@
-<x-guest-layout>
-    <x-jet-authentication-card>
-        <x-slot name="logo">
-            <x-jet-authentication-card-logo />
-        </x-slot>
 
-        <x-jet-validation-errors class="mb-4" />
 
-        <form method="POST" action="{{ route('register') }}">
-            @csrf
+<!doctype html>
+<html class="no-js" lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>Login | Laravel-Starter - Admin Template</title>
+        <meta name="description" content="">
+        <meta name="keywords" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
 
-            <div>
-                <x-jet-label for="name" value="{{ __('Name') }}" />
-                <x-jet-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-            </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/turbolinks/5.2.0/turbolinks.js"></script>
+        <link rel="icon" href="../favicon.ico" type="image/x-icon" />
 
-            <div class="mt-4">
-                <x-jet-label for="email" value="{{ __('Email') }}" />
-                <x-jet-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required />
-            </div>
+        <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:300,400,600,700,800" rel="stylesheet">
 
-            <div class="mt-4">
-                <x-jet-label for="password" value="{{ __('Password') }}" />
-                <x-jet-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" />
-            </div>
+        <link rel="stylesheet" href="{{ asset('plugins/bootstrap/dist/css/bootstrap.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/ionicons/dist/css/ionicons.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('plugins/icon-kit/dist/css/iconkit.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('dist/css/theme.min.css') }}">
+        <script src="{{ asset('src/js/vendor/modernizr-2.8.3.min.js') }}"></script>
+    </head>
 
-            <div class="mt-4">
-                <x-jet-label for="password_confirmation" value="{{ __('Confirm Password') }}" />
-                <x-jet-input id="password_confirmation" class="block mt-1 w-full" type="password" name="password_confirmation" required autocomplete="new-password" />
-            </div>
+    <body>
+        <div class="auth-wrapper">
+            <div class="container-fluid h-100">
+                <div class="row flex-row h-100 bg-white">
+                    <div class="col-xl-8 col-lg-6 col-md-5 p-0 d-md-block d-lg-block d-sm-none d-none">
+                        <div class="lavalite-bg" style="background-image: url('{{asset('img/singup.svg')}}');background-position: center;
+                        background-size: 70% 75%;">
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-lg-6 col-md-7 my-auto p-0">
+                        <div class="authentication-form mx-auto">
+                            <div class="logo-centered">
+                                <a href="{{ route('backend.home') }}"><img src="{{ asset('src/img/brand.svg') }}" alt="logo"></a>
+                            </div>
+                            <h3>New to Laravel-Starter</h3>
+                            <p>Join us today! It takes only few steps</p>
+                            <form action="{{ route('register') }}" method="POST">
 
-            @if (Laravel\Jetstream\Jetstream::hasTermsAndPrivacyPolicyFeature())
-                <div class="mt-4">
-                    <x-jet-label for="terms">
-                        <div class="flex items-center">
-                            <x-jet-checkbox name="terms" id="terms"/>
+                                <div class="form-group">
+                                    <input type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" placeholder="Name" required="">
+                                    <i class="ik ik-user"></i>
 
-                            <div class="ml-2">
-                                {!! __('I agree to the :terms_of_service and :privacy_policy', [
-                                        'terms_of_service' => '<a target="_blank" href="'.route('terms.show').'" class="underline text-sm text-gray-600 hover:text-gray-900">'.__('Terms of Service').'</a>',
-                                        'privacy_policy' => '<a target="_blank" href="'.route('policy.show').'" class="underline text-sm text-gray-600 hover:text-gray-900">'.__('Privacy Policy').'</a>',
-                                ]) !!}
+                                    @error('name')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                    @enderror
+                                </div>
+
+
+                                <div class="form-group">
+                                <input type="text" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" placeholder="Email" required="">
+                                    <i class="ik ik-mail"></i>
+
+                                    @error('email')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                    @enderror
+                                </div>
+                                <div class="form-group" x-data="{show:false}">
+
+
+                                    <input  x-bind:type="!show?'password':'text'" type="password" class="form-control @error('password') is-invalid @enderror" placeholder="Password" required="" name="password" />
+
+
+                                    <div class="input-group-append position-absolute" style="right: 10px;top:9px;">
+
+                                        <a href="#" @click.prevent="show = !show" x-show="show"><i class="ik ik-eye" aria-hidden="true"></i></a>
+                                        <a href="#" @click.prevent="show = !show" x-show="!show"><i class="ik ik-eye-off" aria-hidden="true"></i></a>
+                                    </div>
+                                    <i class="ik ik-lock"></i>
+
+
+
+                                    @error('password')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                    @enderror
+                                </div>
+
+
+                                @csrf
+
+
+                                <div class="form-group" x-data="{show:false}">
+
+
+                                    <input  x-bind:type="!show?'password':'text'" type="password" class="form-control @error('password') is-invalid @enderror" placeholder="Confirm Password"  required="" name="password_confirmation" />
+
+
+                                    <div class="input-group-append position-absolute" style="right: 10px;top:9px;">
+
+                                        <a href="#" @click.prevent="show = !show" x-show="show"><i class="ik ik-eye" aria-hidden="true"></i></a>
+                                        <a href="#" @click.prevent="show = !show" x-show="!show"><i class="ik ik-eye-off" aria-hidden="true"></i></a>
+                                    </div>
+                                    <i class="ik ik-lock"></i>
+
+
+
+                                    @error('password_confirmation')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                    @enderror
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12 text-left">
+                                        <label class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input" id="item_checkbox" name="item_checkbox" required value="1">
+                                            <span class="custom-control-label">&nbsp;I Accept Terms and Conditions</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="sign-btn text-center">
+                                <button type="submit" class="btn btn-theme">{{__('Create Account')}}</button>
+                                </div>
+                            </form>
+                            <div class="register">
+                                <p>Already have an account? <a href="{{ route('login') }}">Sign In</a></p>
                             </div>
                         </div>
-                    </x-jet-label>
+                    </div>
                 </div>
-            @endif
-
-            <div class="flex items-center justify-end mt-4">
-                <a class="underline text-sm text-gray-600 hover:text-gray-900" href="{{ route('login') }}">
-                    {{ __('Already registered?') }}
-                </a>
-
-                <x-jet-button class="ml-4">
-                    {{ __('Register') }}
-                </x-jet-button>
             </div>
-        </form>
-    </x-jet-authentication-card>
-</x-guest-layout>
+        </div>
+
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        <script src="{{ asset('plugins/popper.js/dist/umd/popper.min.js') }}"></script>
+        <script src="{{ asset('plugins/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+
+        <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.3.5/dist/alpine.min.js" defer></script>
+
+    </body>
+</html>

@@ -1,4 +1,15 @@
-FROM php:8.1.1-fpm
+# FROM php:7.4-fpm
+# FROM php:8.1.1-fpm
+FROM php:8.0.2-fpm
+
+
+ENV PHP_OPCACHE_VALIDATE_TIMESTAMPS="0" \
+    PHP_OPCACHE_MAX_ACCELERATED_FILES="10000" \
+    PHP_OPCACHE_MEMORY_CONSUMPTION="192" \
+    PHP_OPCACHE_MAX_WASTED_PERCENTAGE="10"
+
+
+COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 
 # Copy composer.lock and composer.json
 COPY composer.lock composer.json /var/www/
@@ -18,6 +29,7 @@ RUN apt-get update && apt-get install -y \
     libfreetype6-dev \
     libldap2-dev \
     libsodium-dev \
+    libgmp-dev \
     locales \
     zip \
     libzip-dev \
@@ -25,10 +37,11 @@ RUN apt-get update && apt-get install -y \
     vim \
     unzip \
     git \
-    curl \
-    libgmp-dev && \
+    curl && \
     docker-php-ext-configure gd --with-freetype=/usr/include/ --with-webp=/usr/include/  --with-jpeg=/usr/include/ && \
-    docker-php-ext-install gd pdo pdo_mysql mbstring zip gmp bcmath pcntl ldap sysvmsg exif intl sodium
+    docker-php-ext-configure opcache --enable-opcache && \
+    docker-php-ext-install gd pdo pdo_mysql mbstring zip gmp bcmath pcntl ldap sysvmsg exif intl sodium opcache
+
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
